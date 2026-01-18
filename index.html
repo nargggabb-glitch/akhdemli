@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AKHDEMLI VIP NEON | 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Changa:wght@500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="splash">
+        <div class="splash-core">
+            <i class="fas fa-helmet-safety"></i>
+            <h1 style="color:var(--gold); font-family:'Changa'; letter-spacing:5px; margin-top:20px;">AKHDEMLI</h1>
+            <div class="dev-tag">DEVELOPED BY <span style="color:var(--gold)">AYOUB X MAYA</span></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"><div id="t-text"></div></div>
+
+    <header>
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search" class="search-box" placeholder="ابحث عن حرفي، ولاية، أو مهنة..." oninput="smartSearch()">
+        </div>
+    </header>
+
+    <main id="container" style="margin-top:100px; padding-bottom:120px;"></main>
+
+    <nav>
+        <i class="fas fa-th-large" onclick="renderHome()"></i>
+        <div class="add-btn" onclick="showM('regModal')"><i class="fas fa-plus"></i></div>
+        <i class="fas fa-house-user" onclick="renderHome()"></i>
+    </nav>
+
+    <div id="priceModal" class="modal">
+        <div class="modal-body">
+            <h3 id="priceTitle" style="color:var(--gold)">قائمة الأسعار</h3>
+            <div id="priceList" style="text-align:right; margin:20px 0;"></div>
+            <button onclick="closeM('priceModal')" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:12px; border-radius:15px; width:100%;">إغلاق</button>
+        </div>
+    </div>
+
+    <div id="manageModal" class="modal">
+        <div class="modal-body">
+            <h3 style="color:var(--gold)">إدارة الحساب</h3>
+            <input type="password" id="vP" class="inp" placeholder="الرمز السري">
+            <button onclick="handleM('EDIT')" style="background:#fff; color:#000; width:100%; padding:15px; border-radius:15px; font-weight:bold; margin-bottom:10px; border:none;">تعديل البيانات</button>
+            <button onclick="handleDeleteStep()" style="background:rgba(255,0,0,0.1); color:red; width:100%; padding:15px; border-radius:15px; border:1px solid red; font-weight:bold;">حذف البطاقة</button>
+            <p onclick="closeM('manageModal')" style="margin-top:20px; color:#555; cursor:pointer;">تراجع</p>
+        </div>
+    </div>
+
+    <div id="confirmDeleteModal" class="modal">
+        <div class="modal-body">
+            <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:var(--red); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">هل أنت متأكد؟</h3>
+            <button onclick="finalDelete()" style="background:var(--red); color:#fff; border:none; padding:15px; border-radius:15px; width:100%; font-weight:900; margin-top:15px;">نعم، احذف الآن</button>
+            <p onclick="closeM('confirmDeleteModal')" style="margin-top:20px; color:#555; cursor:pointer;">إلغاء</p>
+        </div>
+    </div>
+
+    <div id="regModal" class="modal">
+        <div class="modal-body">
+            <h2 id="regTitle" style="color:var(--gold);">تسجيل جديد</h2>
+            <input type="hidden" id="editKey">
+            <input type="text" id="n" class="inp" placeholder="الاسم واللقب">
+            <select id="j" class="inp"></select>
+            <select id="s" class="inp"></select>
+            <input type="text" id="m" class="inp" placeholder="البلدية">
+            <input type="tel" id="p" class="inp" placeholder="رقم الهاتف">
+            <input type="tel" id="ws_inp" class="inp" placeholder="رقم واتساب">
+            <input type="password" id="pass_inp" class="inp" placeholder="رمز سري للحماية">
+            <textarea id="prices_inp" class="inp" style="height:100px;" placeholder="اكتب خدماتك وأسعارك.. كل خدمة في سطر"></textarea>
+            <button onclick="save('VIP')" style="background:var(--gold); color:#000; width:100%; padding:18px; border-radius:20px; border:none; font-weight:900; margin-bottom:10px;">حفظ كـ VIP</button>
+            <button onclick="save('FREE')" style="background:#111; color:#fff; width:100%; padding:15px; border-radius:20px; border:1px solid #333;">حفظ عادي</button>
+            <p onclick="closeM('regModal')" style="margin-top:15px; color:#555; cursor:pointer;">إلغاء</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
