@@ -1,134 +1,72 @@
-const firebaseConfig = { databaseURL: "https://akhdemli-ace46-default-rtdb.europe-west1.firebasedatabase.app/" };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database().ref('akhdemli_v2026_neon');
+:root { --gold: #ffcc00; --blue: #00d9ff; --whatsapp: #25d366; --dark: #050505; --red: #ff4d4d; --verify-blue: #0084ff; --online: #00ff88; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Cairo', sans-serif; }
+body { margin: 0; background: var(--dark); color: #fff; overflow-x: hidden; background-image: radial-gradient(circle at center, #111 0%, #000 100%); min-height: 100vh; }
 
-const JOBS = {"بناء":"trowel-bricks", "دهان":"paint-roller", "كهربائي":"bolt", "رصاص":"faucet", "ميكانيكي":"car-side", "تبريد":"snowflake", "حداد":"fire", "نجار":"hammer", "حلاق":"user-tie", "خياطة":"shirt", "توصيل":"motorcycle", "بلاط":"th", "تصليح هواتف":"mobile-alt", "ألومنيوم":"window-maximize"};
-const STATES = ["01 أدرار", "02 الشلف", "03 الأغواط", "04 أم البواقي", "05 باتنة", "06 بجاية", "07 بسكرة", "08 بشار", "09 البليدة", "10 البويرة", "11 تمنراست", "12 تبسة", "13 تلمسان", "14 تيارت", "15 تيزي وزو", "16 الجزائر", "17 الجلفة", "18 جيجل", "19 سطيف", "20 سعيدة", "21 سكيكدة", "22 سيدي بلعباس", "23 عنابة", "24 قالمة", "25 قسنطينة", "26 المدية", "27 مستغانم", "28 المسيلة", "29 معسكر", "30 ورقلة", "31 وهران", "32 البيض", "33 إليزي", "34 برج بوعريريج", "35 بومرداس", "36 الطارف", "37 تندوف", "38 تيسمسيلت", "39 الوادي", "40 خنشلة", "41 سوق أهراس", "42 تيبازة", "43 ميلة", "44 عين الدفلى", "45 النعامة", "46 عين تيموشنت", "47 غرداية", "48 غليزان", "49 تيميمون", "50 برج باجي مختار", "51 أولاد جلال", "52 بني عباس", "53 عين صالح", "54 عين قزام", "55 توقرت", "56 جانت", "57 المغير", "58 المنيعة"];
+/* شاشة الدخول */
+#splash { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.8s; }
+.splash-core { text-align: center; }
+.splash-core i { font-size: 5rem; color: var(--gold); filter: drop-shadow(0 0 20px var(--gold)); animation: pulse 2s infinite; }
+.dev-tag { margin-top: 25px; font-family: 'Changa'; font-size: 0.8rem; color: #555; letter-spacing: 2px; }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
 
-let curId = null;
+/* الهيدر والبحث */
+header { padding: 15px; position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.search-container { position: relative; width: 100%; }
+.search-box { width: 100%; padding: 15px 45px 15px 15px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid #222; color: #fff; text-align: right; outline: none; font-size: 0.9rem; }
+.search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gold); }
 
-window.onload = () => {
-    setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(()=>document.getElementById('splash').style.display='none',800); }, 3000);
-    initInputs();
-    db.on('value', snap => {
-        window.data = [];
-        snap.forEach(c => { window.data.push({...c.val(), id: c.key}); });
-        renderHome();
-    });
-};
+/* البطاقات وتنسيق VIP */
+.card { width: 94%; margin: 30px auto; border-radius: 35px; background: rgba(255, 255, 255, 0.02); position: relative; border: 1px solid rgba(255, 255, 255, 0.06); padding: 25px; overflow: hidden; }
+.vip-card { background: linear-gradient(145deg, #0d0d0d 0%, #1a1600 100%); border: 1px solid rgba(255, 204, 0, 0.3); }
+.vip-banner { position: absolute; top: 0; right: 0; background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.2)); padding: 8px 60px; color: var(--gold); font-family: 'Changa'; font-weight: 900; letter-spacing: 12px; font-size: 1.1rem; }
+.rank-number { position: absolute; left: -15px; bottom: -30px; font-size: 8rem; font-weight: 900; color: rgba(255, 255, 255, 0.03); font-family: 'Changa'; z-index: 0; pointer-events: none; }
 
-function initInputs() {
-    Object.keys(JOBS).forEach(k => document.getElementById('j').innerHTML += `<option value="${k}">${k}</option>`);
-    STATES.forEach(v => document.getElementById('s').innerHTML += `<option value="${v}">${v}</option>`);
-}
+/* التحديث الجديد: الشارات وحالة الاتصال */
+.badge-gold { color: var(--gold); margin-right: 8px; font-size: 1.1rem; filter: drop-shadow(0 0 5px var(--gold)); }
+.badge-blue { color: var(--verify-blue); margin-right: 8px; font-size: 1.1rem; filter: drop-shadow(0 0 5px var(--verify-blue)); }
+.status-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--online); background: rgba(0,255,136,0.08); padding: 5px 12px; border-radius: 12px; margin-bottom: 12px; font-weight: bold; border: 1px solid rgba(0,255,136,0.1); }
+.dot { width: 7px; height: 7px; background: var(--online); border-radius: 50%; animation: blink 1.5s infinite; box-shadow: 0 0 8px var(--online); }
 
-function smartSearch() {
-    const q = document.getElementById('search').value.trim().toLowerCase();
-    if(q === "") { renderHome(); return; }
-    const res = window.data.filter(i => i.name.toLowerCase().includes(q) || i.state.toLowerCase().includes(q) || i.job.toLowerCase().includes(q));
-    renderList(null, res);
-}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-function renderHome() {
-    const cont = document.getElementById('container');
-    cont.innerHTML = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:15px;">' + 
-        Object.keys(JOBS).map(k => `<div onclick="renderList('${k}')" style="background:rgba(255,255,255,0.02); padding:22px 10px; border-radius:25px; text-align:center; border:1px solid rgba(255,255,255,0.05);"><i class="fas fa-${JOBS[k]}" style="display:block; font-size:1.8rem; margin-bottom:10px; color:var(--gold);"></i><b>${k}</b></div>`).join('') + '</div>';
-}
+.worker-n { font-size: 1.6rem; font-weight: 900; color: #fff; position: relative; z-index: 2; margin: 0; display: flex; align-items: center; }
+.worker-m { font-size: 0.85rem; color: #aaa; margin: 8px 0; display: flex; align-items: center; gap: 6px; position: relative; z-index: 2; }
+.stars { margin: 12px 0; color: #222; font-size: 1rem; position: relative; z-index: 2; }
+.stars .on { color: var(--gold); filter: drop-shadow(0 0 5px var(--gold)); }
 
-function renderList(job, filtered = null) {
-    const cont = document.getElementById('container');
-    let list = filtered || window.data.filter(w => w.job === job);
-    list.sort((a,b) => (b.rating || 0) - (a.rating || 0));
+.price-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--gold); background: rgba(255, 204, 0, 0.1); padding: 10px 18px; border-radius: 15px; font-size: 0.85rem; cursor: pointer; margin: 10px 0; border: 1px solid rgba(255, 204, 0, 0.2); font-weight: bold; position: relative; z-index: 2; }
 
-    cont.innerHTML = `<h2 style="padding:15px 25px;"><i class="fas fa-chevron-right" onclick="renderHome()" style="margin-left:15px; color:var(--gold);"></i> ${job || 'نتائج البحث'}</h2>`;
-    
-    list.forEach((w, index) => {
-        let stars = ''; const r = Math.round(w.rating || 0);
-        for(let i=1; i<=5; i++) stars += `<i class="fas fa-star ${i<=r?'on':''}" onclick="rate('${w.id}', ${i})"></i>`;
-        cont.innerHTML += `
-            <div class="card ${w.type==='VIP'?'vip-card':''}">
-                <div class="rank-number">${index + 1}</div>
-                ${w.type==='VIP' ? '<div class="vip-banner">VIP</div>' : ''}
-                <h3 class="worker-n">${w.name}</h3>
-                <div class="worker-m"><i class="fas fa-map-pin" style="color:var(--gold)"></i> ${w.state} - ${w.municipality}</div>
-                <div class="stars">${stars}</div>
-                ${w.prices ? `<div class="price-btn" onclick="openPrices('${w.id}')"><i class="fas fa-tags"></i> عرض قائمة الأسعار</div>` : ''}
-                <div class="btn-flex">
-                    <a href="tel:${w.phone}" class="btn-call">اتصل</a>
-                    <a href="https://wa.me/213${w.whatsapp || w.phone}" class="btn-ws"><i class="fab fa-whatsapp"></i></a>
-                    <div class="btn-mng" onclick="openManage('${w.id}')"><i class="fas fa-fingerprint"></i></div>
-                </div>
-            </div>`;
-    });
-}
+.btn-flex { display: flex; gap: 10px; margin-top: 15px; position: relative; z-index: 2; }
+.btn-call { flex: 2; background: var(--blue); color: #000; padding: 15px; border-radius: 20px; text-align: center; font-weight: 900; text-decoration: none; }
+.btn-ws { width: 55px; background: var(--whatsapp); color: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; text-decoration: none; }
+.btn-share { width: 55px; background: rgba(255,255,255,0.08); color: #fff; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+.btn-mng { width: 55px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 20px; display: flex; align-items: center; justify-content: center; color: #666; cursor: pointer; }
 
-function openPrices(id) {
-    const item = window.data.find(x => x.id === id);
-    document.getElementById('priceTitle').innerText = "أسعار " + item.name;
-    document.getElementById('priceList').innerHTML = item.prices.split('\n').map(line => line.trim() ? `<div class="price-item"><span>${line}</span><i class="fas fa-check" style="color:var(--gold)"></i></div>` : '').join('');
-    showM('priceModal');
-}
+/* المودالات والنابار والتوست */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 50000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+.modal-body { background: #080808; padding: 30px; border-radius: 40px; width: 100%; max-width: 400px; border: 1px solid #1a1a1a; text-align: center; max-height: 85vh; overflow-y: auto; }
+.inp { width: 100%; padding: 14px; border-radius: 18px; background: #000; border: 1px solid #222; color: #fff; margin-bottom: 12px; text-align: center; outline: none; }
 
-function openManage(id) { curId = id; document.getElementById('vP').value = ""; showM('manageModal'); }
+nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; height: 70px; background: rgba(10,10,10,0.9); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; border: 1px solid #222; z-index: 1000; }
+.add-btn { width: 60px; height: 60px; background: var(--gold); border-radius: 20px; margin-top: -60px; border: 5px solid var(--dark); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; transform: rotate(45deg); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+.add-btn i { transform: rotate(-45deg); }
 
-function handleM(act) {
-    const p = document.getElementById('vP').value;
-    const item = window.data.find(x => x.id === curId);
-    if(p !== item.password) return toast("❌ الرمز السري غير مطابق");
-    if(act === 'EDIT') {
-        document.getElementById('editKey').value = item.id;
-        document.getElementById('n').value = item.name;
-        document.getElementById('p').value = item.phone;
-        document.getElementById('ws_inp').value = item.whatsapp || "";
-        document.getElementById('prices_inp').value = item.prices || "";
-        document.getElementById('pass_inp').value = item.password || "";
-        document.getElementById('m').value = item.municipality || "";
-        closeM('manageModal'); showM('regModal');
-    }
-}
+.toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 85%; background: #fff; color: #000; padding: 18px; border-radius: 25px; z-index: 999999; transition: 0.6s; text-align: center; font-weight: 900; }
+.toast.show { top: 30px; }
+.price-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #111; color: #ccc; font-size: 0.9rem; }
+/* أضف هذه الأسطر لملف style.css الخاص بك */
 
-function handleDeleteStep() {
-    const p = document.getElementById('vP').value;
-    const item = window.data.find(x => x.id === curId);
-    if(p !== item.password) return toast("❌ الرمز السري غير مطابق");
-    showM('confirmDeleteModal');
-}
+.nav-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; color: #555; transition: 0.3s; width: 80px; }
+.nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+.nav-item span { font-size: 0.65rem; font-weight: bold; }
+.nav-item:hover { color: var(--gold); }
 
-function finalDelete() {
-    db.child(curId).remove(); toast("🗑️ تم الحذف");
-    closeM('confirmDeleteModal'); closeM('manageModal');
-}
+.order-card { width: 94%; margin: 15px auto; background: rgba(0, 217, 255, 0.03); border: 1px dashed rgba(0, 217, 255, 0.2); border-radius: 25px; padding: 20px; animation: fadeIn 0.5s ease; position: relative; }
+.order-name { font-size: 1.1rem; font-weight: 900; color: var(--blue); margin-bottom: 5px; }
+.order-phone { font-size: 0.85rem; color: #777; margin-bottom: 10px; }
+.order-desc { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; font-size: 0.95rem; line-height: 1.5; color: #eee; }
+.order-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.order-del { color: var(--red); cursor: pointer; font-size: 0.8rem; }
+.order-call { background: var(--online); color: #000; padding: 7px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.8rem; }
 
-function save(type) {
-    const editKey = document.getElementById('editKey').value;
-    const p = document.getElementById('p').value;
-    const pass = document.getElementById('pass_inp').value;
-    if(!p || !document.getElementById('n').value || !pass) return toast("⚠️ أكمل البيانات بما فيها الرمز السري");
-    if(!editKey && window.data.some(x => x.phone === p)) return toast("❌ مسجل مسبقاً");
-
-    const d = {
-        name: document.getElementById('n').value, job: document.getElementById('j').value,
-        state: document.getElementById('s').value, municipality: document.getElementById('m').value,
-        phone: p, whatsapp: document.getElementById('ws_inp').value,
-        password: pass,
-        prices: document.getElementById('prices_inp').value, type: type
-    };
-    if(editKey) db.child(editKey).update(d); else db.push({...d, rating:0, votes:0});
-    closeM('regModal'); toast("✅ تم الحفظ بنجاح!");
-}
-
-function rate(id, val) {
-    let voted = JSON.parse(localStorage.getItem('voted_neon') || "[]");
-    if(voted.includes(id)) return toast("⚠️ قيمت سابقاً");
-    db.child(id).once('value', s => {
-        const d = s.val(); const nv = (d.votes || 0) + 1;
-        const nr = (((d.rating || 0) * (d.votes || 0)) + val) / nv;
-        db.child(id).update({ rating: nr, votes: nv });
-        voted.push(id); localStorage.setItem('voted_neon', JSON.stringify(voted));
-        toast("⭐ بطاقة شكر: شكراً لتقييمك!");
-    });
-}
-
-function showM(id) { document.getElementById(id).style.display = 'flex'; }
-function closeM(id) { document.getElementById(id).style.display = 'none'; }
-function toast(m) { const t = document.getElementById('toast'); document.getElementById('t-text').innerText = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
